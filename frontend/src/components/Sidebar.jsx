@@ -1,103 +1,89 @@
-import React from 'react';
-import { Drawer, AppBar, Toolbar, Typography, Box, List, ListItem, ListItemIcon, ListItemText, Link } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Drawer, AppBar, Toolbar, Box, List, IconButton, CssBaseline } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import SchoolIcon from '@mui/icons-material/School';
 import BookIcon from '@mui/icons-material/Book';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 import NavigationItem from './NavigationItem';
 
-function Sidebar() {
-    const navigate = useNavigate();
-
-    const handleAITutorClick = () => {
-        window.open('/ai-tutor', '_blank');
-    };
-
+const Sidebar = ({ open, toggleDrawer }) => {
     return (
-        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#F4F4F4' }}>
+        <>
+            <CssBaseline />
+            <AppBar position="fixed" sx={{
+                bgcolor: 'rgba(40, 200, 180, 0.8)', // Modern blue-grey color with transparency
+                boxShadow: '5px -5px 10px rgba(0, 0, 0, 0.3), 5px 5px 10px rgba(0, 0, 0, 0.3)',
+                zIndex: 1400,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 20px'
+            }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
+                        <MenuIcon />
+                    </IconButton>
+                    <img src="/logo_CourseAssist.png" alt="CourseAssist AI Logo" style={{
+                        height: 50,
+                        marginLeft: '10px',
+                        filter: 'drop-shadow(2px 4px 6px grey)',
+                    }} />
+                </Box>
+            </AppBar>
             <Drawer
                 variant="permanent"
+                open={open}
                 sx={{
-                    width: 300,
+                    width: open ? 240 : 72,
                     flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                    boxSizing: 'border-box',
                     '& .MuiDrawer-paper': {
-                        width: 300,
+                        width: open ? 240 : 72,
+                        transition: 'width 0.3s',
+                        overflowX: 'hidden',
                         boxSizing: 'border-box',
-                        bgcolor: 'background.paper',
+                        backgroundColor: 'white',
                         boxShadow: '5px 5px 15px rgba(0,0,0,0.3)',
                         borderRadius: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        // position: 'fixed',
-                        height: '100%', // Full height
-                        position: 'relative', // Allow scrolling
+                        marginTop: '64px',
                     }
                 }}
             >
-                <AppBar position="relative" sx={{
-                    bgcolor: 'primary.main',
-                    backgroundImage: 'linear-gradient(45deg, #f0f0f0 30%, #ffffff 90%)',
-                    padding: '20px 0',
-                    boxShadow: '5px -5px 10px rgba(0, 0, 0, 0.3), 5px 5px 10px rgba(0, 0, 0, 0.3)',
-                    borderRadius: 1,
-                    zIndex: 1400,
-                }}>
-                    <Toolbar sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}>
-                        <img src="/logo_CourseAssist.png" alt="CourseAssist AI Logo" style={{
-                            height: 70,
-                            filter: 'drop-shadow(2px 4px 6px grey)'
-                        }} />
-                    </Toolbar>
-                </AppBar>
-                
-                <Box sx={{ flex: 1, overflow: 'auto' }}>
+                <Box sx={{ flex: 1, overflow: 'auto', mt: '10px' }}>
                     <List>
                         <NavigationItem
-                            to="/ai-tutor"
+                            // to="/ai-tutor"
+                            to="https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69"
                             icon={<SchoolIcon />}
                             text="AI Tutor"
-                            onClick={handleAITutorClick}
+                            // onClick={() => window.open('/ai-tutor', '_blank')}
+                            open={open}
                         />
                         <NavigationItem
                             to="/course-materials"
                             icon={<BookIcon />}
-                            text="Course Materials"
+                            text="Materials"
+                            open={open}
                         />
                         <NavigationItem
                             to="/conversations"
                             icon={<ChatIcon />}
                             text="Conversations"
+                            open={open}
                         />
                         <NavigationItem
                             to="/"
                             icon={<HomeIcon />}
-                            text="Go back to courses"
+                            text="Home"
+                            open={open}
                         />
                     </List>
-                    {/* <List>
-                     {['AI Tutor', 'Course Materials', 'Conversations', 'Go back to courses'].map((text, index) => (
-                            <ListItem key={text} component={text === 'AI Tutor' ? 'a' : RouterLink} href={text === 'AI Tutor' ? 'https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69' : undefined} target={text === 'AI Tutor' ? '_blank' : undefined} to={text !== 'AI Tutor' ? '/' + text.replace(/\s/g, '-').toLowerCase() : undefined} sx={{
-                                '&:hover': {
-                                    bgcolor: 'rgba(0, 123, 255, 0.1)',
-                                    transform: 'scale(1.0)',
-                                    transition: 'transform 0.2s ease-in-out'
-                                }
-                            }}>
-                                <ListItemIcon>
-                                    {[<SchoolIcon />, <BookIcon />, <ChatIcon />, <HomeIcon />][index]}
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '20px', color: '#4a4a4a' }}>{text}</Typography>} />
-                            </ListItem>
-                        ))}
-                    </List> */}
                 </Box>
             </Drawer>
-        </Box>
+        </>
     );
 }
 

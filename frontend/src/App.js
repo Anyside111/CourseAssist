@@ -1,6 +1,4 @@
-import logo from './logo.svg';
-import './App.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,25 +15,31 @@ const theme = createTheme({
 });
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-    <Router>
-       <div style={{ display: 'flex' }}>
-        <Sidebar />
-        {/* <SidebarScorll /> */}
-        <main style={{ flex: 1, padding: '20px' }}>
-          <Routes>
-            <Route path="/ai-tutor" element={<AITutorPage />} />
-            <Route path="/course-materials" element={<FileUpload />} />
-            <Route path="/file-preview/:id" element={<FilePreview />} />
-            {/* Define other routes here */}
-          </Routes>
-        </main>
-      </div>
-    </Router>
+      <Router>
+        <div style={{ display: 'flex' }}>
+          <Sidebar open={sidebarOpen} toggleDrawer={toggleSidebar} />
+          <main style={{ flex: 1, padding: '20px', paddingTop: '80px', marginLeft: sidebarOpen ? 240 : 72, transition: 'margin-left 0.3s' }}>
+            <Routes>
+              <Route path="/ai-tutor" element={<AITutorPage />} />
+              <Route path="/course-materials" element={<FileUpload />} />
+              <Route path="/file-preview/:id" element={<FilePreview />} />
+              {/* Define other routes here */}
+            </Routes>
+          </main>
+        </div>
+      </Router>
     </ThemeProvider>
   );
+
   // <Router>
     //   <Sidebar />
     //   <div className="container">

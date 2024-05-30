@@ -159,7 +159,7 @@ function FileUpload() {
                     <Typography variant="h6" gutterBottom>Upload File</Typography>
                     <div {...getRootProps()} style={{ border: '2px dashed #007bff', padding: '20px', textAlign: 'center', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <input {...getInputProps()} />
-                        <Typography>Drag & drop files here, or use the button to select files.</Typography>
+                        <Typography>Drag & drop files</Typography>
                         {!file ? (
                             <ChooseButton onClick={() => open()}>
                                 Choose File

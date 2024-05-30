@@ -26,6 +26,9 @@ code {
     body {
         padding-top: 10px;
     }
+    .MuiAppBar-root {
+        width: 1600px; /* wider on larger screens */
+    }
 }
 
 /* Adding subtle transitions for interactive elements */
@@ -60,6 +63,7 @@ button:hover {
 /* Styling the AppBar */
 .MuiAppBar-root {
     box-shadow: none;
+    width: 100%;
     background-color: #4A90E2;
     background-image: linear-gradient(45deg, #4A90E2 30%, #91eff3 90%);
 }
@@ -88,7 +92,7 @@ button:hover {
 }
 
 .MuiListItem-root:hover {
-    background-color: rgba(85, 120, 158, 0.1);
+    background-color: rgba(0, 123, 255, 0.1);
 }
 
 .MuiListItemText-primary {
