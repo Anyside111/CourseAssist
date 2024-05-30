@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { List, ListItem, ListItemText, Button, Card, CardContent, Typography, Box, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -13,7 +14,7 @@ const CardStyled = styled(Card)(({ theme }) => ({
 
 const UploadButton = styled(Button)(({ theme }) => ({
     marginLeft: theme.spacing(2),
-    backgroundColor: '#28a745', // Green color for Upload button
+    backgroundColor: '#28a745',
     color: '#fff',
     '&:hover': {
         backgroundColor: '#218838',
@@ -21,7 +22,7 @@ const UploadButton = styled(Button)(({ theme }) => ({
 }));
 
 const ChooseButton = styled(Button)(({ theme }) => ({
-    backgroundColor: '#007bff', // Blue color for Choose File button
+    backgroundColor: '#007bff',
     color: '#fff',
     '&:hover': {
         backgroundColor: '#0056b3',
@@ -51,32 +52,43 @@ function FileUpload() {
     const [lastUpdate, setLastUpdate] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
     };
+
+    const handleDrop = (acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+            setFile(acceptedFiles[0]);
+        }
+    };
+
+    const { getRootProps, getInputProps, open } = useDropzone({
+        onDrop: handleDrop,
+        noClick: true,
+        noKeyboard: true
+    });
 
     const handleFileUpload = () => {
         if (!file) {
             alert('Please select a file first!');
             return;
         }
+
         const formData = new FormData();
         formData.append('uploadedFile', file);
-
-        setTimeout(() => {
-            setShowSuccess(false);
-        }, 3000); // Auto-hide after 3 seconds
 
         fetch('http://localhost:3000/upload', {
             method: 'POST',
             body: formData,
         })
         .then(response => response.text())
-        .then(data => {
+        .then(() => {
             setShowSuccess(true);
-            fetchFiles(); // Refresh file list after upload
+            setTimeout(() => setShowSuccess(false), 3000); // Auto-hide after 3 seconds
             setFile(null); // Reset file input
+            fetchFiles(); // Refresh file list after upload
         })
         .catch(error => {
             console.error('Error:', error);
@@ -107,7 +119,7 @@ function FileUpload() {
         <>
             <Snackbar
                 open={showSuccess}
-                autoHideDuration={6000}
+                autoHideDuration={1500} // Auto-hide after 3 seconds
                 onClose={() => setShowSuccess(false)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
@@ -118,32 +130,20 @@ function FileUpload() {
 
             <CardStyled>
                 <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                        Upload File
-                    </Typography>
-                    {file ? (
-                        <>
-                            <Typography variant="body1" sx={{ mt: 2 }}>{file.name}</Typography>
-                            <UploadButton
-                                variant="contained"
-                                onClick={handleFileUpload}
-                            >
+                    <Typography variant="h6" gutterBottom>Upload File</Typography>
+                    <div {...getRootProps({ className: 'dropzone' })} style={{ border: '2px dashed #007bff', padding: '20px', textAlign: 'center', cursor: 'pointer' }}>
+                        <input id="fileInput" {...getInputProps()} />
+                        <Typography>Drag & drop files here</Typography>
+                        {file ? (
+                            <UploadButton onClick={handleFileUpload}>
                                 Upload File
                             </UploadButton>
-                        </>
-                    ) : (
-                        <ChooseButton
-                            variant="contained"
-                            component="label"
-                        >
-                            Choose File
-                            <input
-                                type="file"
-                                hidden
-                                onChange={handleFileChange}
-                            />
-                        </ChooseButton>
-                    )}
+                        ) : (
+                            <ChooseButton component="span" onClick={open}>
+                                Choose File
+                            </ChooseButton>
+                        )}
+                    </div>
                 </CardContent>
             </CardStyled>
 

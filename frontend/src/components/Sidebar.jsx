@@ -29,8 +29,9 @@ function Sidebar() {
                         borderRadius: 2,
                         display: 'flex',
                         flexDirection: 'column',
-                        position: 'fixed',
-                        height: '100vh',
+                        // position: 'fixed',
+                        height: '100%', // Full height
+                        position: 'relative', // Allow scrolling
                     }
                 }}
             >

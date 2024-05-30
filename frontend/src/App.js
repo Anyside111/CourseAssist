@@ -6,7 +6,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import Sidebar from './components/Sidebar';
-import SidebarScorll from './components/Sidebar_scrollable';
 import FileUpload from './components/FileUpload';
 import FilePreview from './components/FilePreview';
 import AITutorPage from './components/AITutorPage';

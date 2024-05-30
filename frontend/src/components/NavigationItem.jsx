@@ -15,7 +15,7 @@ const NavigationItem = ({ to, icon, text, onClick }) => (
                 transform: 'scale(1.0)',
                 transition: 'transform 0.2s ease-in-out',
                 '& .MuiTypography-root': {
-                    color: '#1f61a2', // Change this to your desired hover color
+                    color: '#1f61a2', // Change this to the desired hover color
                 },
             }
         }}
