@@ -2,20 +2,32 @@ import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
 import Sidebar from './components/Sidebar';
 import SidebarScorll from './components/Sidebar_scrollable';
 import FileUpload from './components/FileUpload';
 import FilePreview from './components/FilePreview';
+import AITutorPage from './components/AITutorPage';
 
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
     <Router>
        <div style={{ display: 'flex' }}>
         <Sidebar />
         {/* <SidebarScorll /> */}
         <main style={{ flex: 1, padding: '20px' }}>
           <Routes>
+            <Route path="/ai-tutor" element={<AITutorPage />} />
             <Route path="/course-materials" element={<FileUpload />} />
             <Route path="/file-preview/:id" element={<FilePreview />} />
             {/* Define other routes here */}
@@ -23,7 +35,7 @@ function App() {
         </main>
       </div>
     </Router>
-    
+    </ThemeProvider>
   );
   // <Router>
     //   <Sidebar />

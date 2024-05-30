@@ -80,6 +80,16 @@ app.get('/files/:id', async (req, res) => {
 //     res.sendFile(filePath);
 // });
 
+app.post('/api/llm', async (req, res) => {
+    const { message } = req.body;
+    // Replace this with the actual call to your LLM API
+    const response = await callLLMApi(message);
+    res.json({ answer: response });
+});
 
+const callLLMApi = async (message) => {
+    // Simulated API call - replace with your LLM API call
+    return `Response for: ${message}`;
+};
 
 app.listen(3000, () => console.log('Server running on port 3000'));

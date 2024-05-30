@@ -1,12 +1,21 @@
 import React from 'react';
-import { Drawer, AppBar, Toolbar, Typography, Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Drawer, AppBar, Toolbar, Typography, Box, List, ListItem, ListItemIcon, ListItemText, Link } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
 import BookIcon from '@mui/icons-material/Book';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
-import { Link as RouterLink } from 'react-router-dom';
+import NavigationItem from './NavigationItem';
+
 
 function Sidebar() {
+    const navigate = useNavigate();
+
+    const handleAITutorClick = () => {
+        window.open('/ai-tutor', '_blank');
+    };
+
+
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             <Drawer
@@ -47,10 +56,34 @@ function Sidebar() {
                     </Toolbar>
                 </AppBar>
                 
-                <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                <Box sx={{ flex: 1, overflow: 'auto' }}>
                     <List>
-                        {['AI Tutor', 'Course Materials', 'Conversations', 'Go back to courses'].map((text, index) => (
-                            <ListItem key={text} component={RouterLink} to={'/' + text.replace(/\s/g, '-').toLowerCase()} sx={{
+                        <NavigationItem
+                            to="/ai-tutor"
+                            icon={<SchoolIcon />}
+                            text="AI Tutor"
+                            onClick={handleAITutorClick}
+                        />
+                        <NavigationItem
+                            to="/course-materials"
+                            icon={<BookIcon />}
+                            text="Course Materials"
+                        />
+                        <NavigationItem
+                            to="/conversations"
+                            icon={<ChatIcon />}
+                            text="Conversations"
+                        />
+                        <NavigationItem
+                            to="/"
+                            icon={<HomeIcon />}
+                            text="Go back to courses"
+                        />
+                    </List>
+                
+                {/* <List>
+                     {['AI Tutor', 'Course Materials', 'Conversations', 'Go back to courses'].map((text, index) => (
+                            <ListItem key={text} component={text === 'AI Tutor' ? 'a' : RouterLink} href={text === 'AI Tutor' ? 'https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69' : undefined} target={text === 'AI Tutor' ? '_blank' : undefined} to={text !== 'AI Tutor' ? '/' + text.replace(/\s/g, '-').toLowerCase() : undefined} sx={{
                                 '&:hover': {
                                     bgcolor: 'rgba(0, 123, 255, 0.1)',
                                     transform: 'scale(1.0)',
@@ -63,8 +96,8 @@ function Sidebar() {
                                 <ListItemText primary={<Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '20px', color: '#4a4a4a' }}>{text}</Typography>} />
                             </ListItem>
                         ))}
-                    </List>
-                </Box>
+                    </List> */}
+                </Box>                     
             </Drawer>
         </Box>
     );
