@@ -1,7 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText, Button, Card, CardContent, Typography, Box, IconButton, Alert, Snackbar } from '@mui/material';
+import { List, ListItem, ListItemText, Button, Card, CardContent, Typography, Box, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { styled } from '@mui/system';
+
+const CardStyled = styled(Card)(({ theme }) => ({
+    margin: '20px 0',
+    padding: theme.spacing(2),
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+}));
+
+const UploadButton = styled(Button)(({ theme }) => ({
+    marginLeft: theme.spacing(2),
+    backgroundColor: '#28a745', // Green color for Upload button
+    color: '#fff',
+    '&:hover': {
+        backgroundColor: '#218838',
+    },
+}));
+
+const ChooseButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#007bff', // Blue color for Choose File button
+    color: '#fff',
+    '&:hover': {
+        backgroundColor: '#0056b3',
+    },
+}));
+
+const FileList = styled(List)(({ theme }) => ({
+    paddingLeft: theme.spacing(2),
+}));
+
+const FileItem = styled(ListItem)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+    borderBottom: '1px solid #e0e0e0',
+}));
+
+const FileName = styled(Typography)(({ theme }) => ({
+    fontWeight: 'bold',
+    marginRight: theme.spacing(1),
+}));
 
 function FileUpload() {
     const [file, setFile] = useState(null);
@@ -73,8 +115,8 @@ function FileUpload() {
                     File uploaded successfully!
                 </Alert>
             </Snackbar>
-            
-            <Card raised sx={{ margin: 2 }}>
+
+            <CardStyled>
                 <CardContent>
                     <Typography variant="h6" gutterBottom>
                         Upload File
@@ -82,21 +124,17 @@ function FileUpload() {
                     {file ? (
                         <>
                             <Typography variant="body1" sx={{ mt: 2 }}>{file.name}</Typography>
-                            <Button
+                            <UploadButton
                                 variant="contained"
-                                color="secondary"
                                 onClick={handleFileUpload}
-                                sx={{ mt: 2 }}
                             >
                                 Upload File
-                            </Button>
+                            </UploadButton>
                         </>
                     ) : (
-                        <Button
+                        <ChooseButton
                             variant="contained"
-                            color="primary"
                             component="label"
-                            sx={{ mt: 2 }}
                         >
                             Choose File
                             <input
@@ -104,12 +142,12 @@ function FileUpload() {
                                 hidden
                                 onChange={handleFileChange}
                             />
-                        </Button>
+                        </ChooseButton>
                     )}
                 </CardContent>
-            </Card>
-            
-            <Card raised sx={{ margin: 2 }}>
+            </CardStyled>
+
+            <CardStyled>
                 <CardContent>
                     <Typography variant="h4" gutterBottom>
                         Course Materials
@@ -117,36 +155,27 @@ function FileUpload() {
                     <Typography variant="h6" gutterBottom>
                         Files you have uploaded: {files.length} <span style={{ marginLeft: '10px' }}>Last update: {lastUpdate}</span>
                     </Typography>
-                    <List sx={{ paddingLeft: 2 }}>
+                    <FileList>
                         {files.map((file, index) => (
-                            <ListItem key={file.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Typography variant="body2" sx={{ fontWeight: 'bold', marginRight: 1 }}>{index + 1}.</Typography>
-                                <ListItemText primary={file.filename} secondary={`Uploaded on: ${new Date(file.upload_date).toLocaleString()}`} />
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => handlePreview(file.id)}
-                                    sx={{ marginLeft: 1 }}
-                                >
-                                    View File
-                                </Button>
-                                    {/* <IconButton
+                            <FileItem key={file.id}>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <FileName variant="body2">{index + 1}. {file.filename}</FileName>
+                                    <Button
                                         variant="outlined"
                                         size="small"
                                         color="primary"
                                         onClick={() => handlePreview(file.id)}
                                         sx={{ marginLeft: 1 }}
                                     >
-                                        <VisibilityIcon />
-                                    </IconButton> */}
+                                        View File
+                                    </Button>
                                 </Box>
-                            </ListItem>
+                                <ListItemText secondary={`Uploaded on: ${new Date(file.upload_date).toLocaleString()}`} sx={{ marginLeft: 2 }} />
+                            </FileItem>
                         ))}
-            </List>
+                    </FileList>
                 </CardContent>
-            </Card>
+            </CardStyled>
         </>
     );
 }

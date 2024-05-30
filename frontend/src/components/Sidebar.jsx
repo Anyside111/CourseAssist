@@ -7,7 +7,6 @@ import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 import NavigationItem from './NavigationItem';
 
-
 function Sidebar() {
     const navigate = useNavigate();
 
@@ -15,9 +14,8 @@ function Sidebar() {
         window.open('/ai-tutor', '_blank');
     };
 
-
     return (
-        <Box sx={{ display: 'flex', height: '100vh' }}>
+        <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#F4F4F4' }}>
             <Drawer
                 variant="permanent"
                 sx={{
@@ -31,8 +29,8 @@ function Sidebar() {
                         borderRadius: 2,
                         display: 'flex',
                         flexDirection: 'column',
-                        position: 'fixed', // Fixes the drawer to the viewport
-                        height: '100vh', // Full height
+                        position: 'fixed',
+                        height: '100vh',
                     }
                 }}
             >
@@ -80,8 +78,7 @@ function Sidebar() {
                             text="Go back to courses"
                         />
                     </List>
-                
-                {/* <List>
+                    {/* <List>
                      {['AI Tutor', 'Course Materials', 'Conversations', 'Go back to courses'].map((text, index) => (
                             <ListItem key={text} component={text === 'AI Tutor' ? 'a' : RouterLink} href={text === 'AI Tutor' ? 'https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69' : undefined} target={text === 'AI Tutor' ? '_blank' : undefined} to={text !== 'AI Tutor' ? '/' + text.replace(/\s/g, '-').toLowerCase() : undefined} sx={{
                                 '&:hover': {
@@ -97,7 +94,7 @@ function Sidebar() {
                             </ListItem>
                         ))}
                     </List> */}
-                </Box>                     
+                </Box>
             </Drawer>
         </Box>
     );
