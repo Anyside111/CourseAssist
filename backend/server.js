@@ -1,11 +1,12 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const path = require('path');
-const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const app = express();
 const { Pool } = require('pg');
 const pool = new Pool({ connectionString: 'postgres://postgres:1212@localhost:5432/courseassist' });
 
-const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
@@ -19,20 +20,27 @@ app.post('/upload', async (req, res) => {
         return res.status(400).send('No files were uploaded.');
     }
 
-    // Example of handling single file upload
-    let uploadedFile = req.files.uploadedFile; // The name 'uploadedFile' should match the name attribute in your front-end form
-    let uploadPath = path.join(__dirname, '/uploads/', uploadedFile.name);
+    const uploadedFile = req.files.uploadedFile;
+    const uploadPath = path.join(__dirname, 'uploads', uploadedFile.name);
 
-    // Use the mv() method to place the file on the server
-    uploadedFile.mv(uploadPath, async function(err) {
-        if (err) return res.status(500).send(err);
+    try {
+        const { rows } = await pool.query('SELECT * FROM files WHERE filename = $1', [uploadedFile.name]);
 
-        // Insert file information into the database
-        const query = 'INSERT INTO files (filename, upload_date) VALUES ($1, $2)';
-        await pool.query(query, [uploadedFile.name, new Date()]);
-
-        res.send('File uploaded and saved to database!');
-    });
+        if (rows.length > 0) {
+            // Update the existing file's upload date and overwrite the file
+            await pool.query('UPDATE files SET upload_date = $1 WHERE filename = $2', [new Date(), uploadedFile.name]);
+            fs.writeFileSync(uploadPath, uploadedFile.data);
+            res.send('File updated successfully.');
+        } else {
+            // Insert new file record
+            await pool.query('INSERT INTO files (filename, upload_date) VALUES ($1, $2)', [uploadedFile.name, new Date()]);
+            fs.writeFileSync(uploadPath, uploadedFile.data);
+            res.send('File uploaded successfully.');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Database or file handling error.');
+    }
 });
 
 // Route to retrieve file list
@@ -55,7 +63,7 @@ app.get('/files/:id', async (req, res) => {
 
         if (result.rows.length > 0) {
             const file = result.rows[0];
-            const filePath = path.join(__dirname, '/uploads/', file.filename);
+            const filePath = path.join(__dirname, 'uploads', file.filename);
             res.download(filePath, file.filename);
         } else {
             res.status(404).send('File not found');
@@ -66,19 +74,32 @@ app.get('/files/:id', async (req, res) => {
     }
 });
 
-// app.get('/files/:id', async (req, res) => {
-//     const fileId = req.params.id;
-//     const query = 'SELECT * FROM files WHERE id = $1';
-//     const { rows } = await pool.query(query, [fileId]);
+// Route to delete a file
+app.delete('/api/files/:id', async (req, res) => {
+    const fileId = req.params.id;
 
-//     if (rows.length === 0) {
-//         return res.status(404).send('File not found');
-//     }
+    try {
+        const result = await pool.query('SELECT filename FROM files WHERE id = $1', [fileId]);
 
-//     const file = rows[0];
-//     const filePath = path.join(__dirname, 'uploads', file.filename);
-//     res.sendFile(filePath);
-// });
+        if (result.rows.length > 0) {
+            const filePath = path.join(__dirname, 'uploads', result.rows[0].filename);
+            fs.unlink(filePath, async (err) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Error deleting file');
+                }
+
+                await pool.query('DELETE FROM files WHERE id = $1', [fileId]);
+                res.status(200).send('File deleted');
+            });
+        } else {
+            res.status(404).send('File not found');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
 
 app.post('/api/llm', async (req, res) => {
     const { message } = req.body;

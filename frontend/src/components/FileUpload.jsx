@@ -51,8 +51,8 @@ function FileUpload() {
     const [files, setFiles] = useState([]);
     const [lastUpdate, setLastUpdate] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
     const navigate = useNavigate();
-    const fileInputRef = useRef(null);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -86,7 +86,7 @@ function FileUpload() {
         .then(response => response.text())
         .then(() => {
             setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 3000); // Auto-hide after 3 seconds
+            setTimeout(() => setShowSuccess(false), 1500); // Auto-hide after 3 seconds
             setFile(null); // Reset file input
             fetchFiles(); // Refresh file list after upload
         })
@@ -107,6 +107,21 @@ function FileUpload() {
             .catch(error => console.error('Error:', error));
     };
 
+    const handleFileDelete = (fileId) => {
+        fetch(`http://localhost:3000/api/files/${fileId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.text())
+        .then(() => {
+            setShowDeleteSuccess(true);
+            setTimeout(() => setShowDeleteSuccess(false), 1500); // Auto-hide after 1.5 seconds
+            fetchFiles(); // Refresh file list after delete
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+    
     useEffect(() => {
         fetchFiles(); // Fetch files on component mount
     }, []);
@@ -128,24 +143,36 @@ function FileUpload() {
                 </Alert>
             </Snackbar>
 
+            <Snackbar
+                open={showDeleteSuccess}
+                autoHideDuration={1500}
+                onClose={() => setShowDeleteSuccess(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setShowDeleteSuccess(false)} severity="success" sx={{ width: '100%' }}>
+                    File deleted successfully!
+                </Alert>
+            </Snackbar>
+
             <CardStyled>
                 <CardContent>
                     <Typography variant="h6" gutterBottom>Upload File</Typography>
-                    <div {...getRootProps({ className: 'dropzone' })} style={{ border: '2px dashed #007bff', padding: '20px', textAlign: 'center', cursor: 'pointer' }}>
-                        <input id="fileInput" {...getInputProps()} />
-                        <Typography>Drag & drop files here</Typography>
-                        {file ? (
+                    <div {...getRootProps()} style={{ border: '2px dashed #007bff', padding: '20px', textAlign: 'center', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <input {...getInputProps()} />
+                        <Typography>Drag & drop files here, or use the button to select files.</Typography>
+                        {!file ? (
+                            <ChooseButton onClick={() => open()}>
+                                Choose File
+                            </ChooseButton>
+                        ) : (
                             <UploadButton onClick={handleFileUpload}>
                                 Upload File
                             </UploadButton>
-                        ) : (
-                            <ChooseButton component="span" onClick={open}>
-                                Choose File
-                            </ChooseButton>
                         )}
                     </div>
                 </CardContent>
             </CardStyled>
+
 
             <CardStyled>
                 <CardContent>
@@ -167,7 +194,16 @@ function FileUpload() {
                                         onClick={() => handlePreview(file.id)}
                                         sx={{ marginLeft: 1 }}
                                     >
-                                        View File
+                                        View
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        color="secondary"
+                                        onClick={() => handleFileDelete(file.id)}
+                                        sx={{ marginLeft: 1 }}
+                                    >
+                                        Delete
                                     </Button>
                                 </Box>
                                 <ListItemText secondary={`Uploaded on: ${new Date(file.upload_date).toLocaleString()}`} sx={{ marginLeft: 2 }} />
