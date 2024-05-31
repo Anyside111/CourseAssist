@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import { useNavigate } from 'react-router-dom';
+import '../index.css';
 
-function LoginDialog({ open, onClose, onLogin }) {
+function AuthDialog({ open, onClose, onAuthenticate, isSignUp }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLoginClick = () => {
-        onLogin(username, password);
-        onClose(); // Close dialog after attempt
+    const handleAuthenticate = () => {
+        onAuthenticate(username, password, isSignUp);
+        onClose();
     };
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Login</DialogTitle>
+            <DialogTitle>{isSignUp ? 'Sign Up' : 'Login'}</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
@@ -38,8 +40,8 @@ function LoginDialog({ open, onClose, onLogin }) {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleLoginClick} color="primary">
-                    Login
+                <Button onClick={handleAuthenticate} color="primary">
+                    {isSignUp ? 'Sign Up' : 'Login'}
                 </Button>
             </DialogActions>
         </Dialog>
@@ -47,19 +49,69 @@ function LoginDialog({ open, onClose, onLogin }) {
 }
 
 export default function UserLogin() {
-    const [open, setOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [message, setMessage] = useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const handleLogin = (username, password) => {
-        console.log('Login Attempt:', username, password);
-        // Here you would usually handle authentication
+    const handleAuthenticate = (username, password, isSignUp, setUserId, setUsername) => {
+        const url = `http://localhost:3000/${isSignUp ? 'signup' : 'login'}`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'HTTP error! Status: ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            setMessage(data.message);
+            setSnackbarOpen(true);
+            if (data.authenticated) {
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('username', data.username); // Store the username
+                setUserId(data.userId); // Set the user ID state
+                setUsername(data.username); // Set the username state
+                setTimeout(() => navigate('/home'), 600); // Delay navigation
+            }
+        })
+        .catch(error => {
+            console.error('Authentication failed:', error);
+            setMessage('Failed to authenticate. ' + error.message);
+            setSnackbarOpen(true);
+        });
     };
 
     return (
         <>
-            <IconButton onClick={() => setOpen(true)} color="inherit">
+            <IconButton onClick={() => { setDialogOpen(true); setIsSignUp(false); }} color="inherit">
                 <PersonIcon />
             </IconButton>
-            <LoginDialog open={open} onClose={() => setOpen(false)} onLogin={handleLogin} />
+            <Button onClick={() => { setDialogOpen(true); setIsSignUp(true); }} className="button-sign-up">
+                Sign Up
+            </Button>
+            <AuthDialog 
+                open={dialogOpen} 
+                onClose={() => setDialogOpen(false)} 
+                onAuthenticate={handleAuthenticate} 
+                isSignUp={isSignUp} 
+                setMessage={setMessage} 
+                setSnackbarOpen={setSnackbarOpen}
+            />
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                message={message}
+            />
         </>
     );
 }

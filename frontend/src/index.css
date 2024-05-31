@@ -52,6 +52,23 @@ button:hover {
     background-color: #1f61a2;
 }
 
+.button-sign-up {
+    background-color: #85a9c9;
+    color: rgb(87, 122, 174);
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold!important;
+    font-size: 17px!important;
+}
+
+.button-sign-up:hover {
+    background-color: #6282a5;
+}
+
+  
 /* Styling the card elements */
 .MuiCard-root {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

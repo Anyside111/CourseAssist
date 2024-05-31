@@ -1,22 +1,21 @@
-// require('dotenv').config();
-// console.log("API Token:", process.env.REPLICATE_API_TOKEN);  // Should print your token
+require('dotenv').config();
 const ollama = require('ollama').default;
-console.log(ollama);
 const express = require('express');
+const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
-// const Replicate = require("replicate");
 
-// console.log("Checking API Token:", process.env.REPLICATE_API_TOKEN);
-// const replicate = new Replicate({
-//   auth: process.env.REPLICATE_API_TOKEN
-// });
-// console.log(replicate.auth);  // This should print your token if correctly set
 const { Pool } = require('pg');
-const pool = new Pool({ connectionString: 'postgres://postgres:1212@localhost:5432/courseassist' });
+require('dotenv').config();
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL // Set your DATABASE_URL in your .env file
+});
+
+module.exports = pool;
 
 const app = express();
 app.use(cors());
@@ -25,19 +24,113 @@ app.use(express.json());
 app.use(fileUpload());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// Authentication routes
+app.post('/signup', async (req, res) => {
+    console.log('signupReceived:', req.body);
+    const { username, password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10); // Ensure the salt rounds are consistent
+        const result = await pool.query(
+            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
+            [username, hashedPassword]
+        );
+        res.status(201).json({ userId: result.rows[0].id, message: 'Registration successful', authenticated: true });
+    } catch (error) {
+        if (error.code === '23505') {
+            res.status(409).json({ message: 'Username already exists', authenticated: false });
+        } else {
+            console.error('Signup Error:', error);
+            res.status(500).json({ message: 'Error registering new user' });
+        }
+    }
+});
+
+app.post('/login', async (req, res) => {
+    console.log('loginReceived:', req.body);
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
+    }
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            const isMatch = await bcrypt.compare(password, user.password_hash);
+            if (isMatch) {
+                res.json({ message: 'Login successful', authenticated: true, userId: user.id, username: user.username });
+            } else {
+                res.status(400).json({ message: 'Invalid credentials', authenticated: false });
+            }
+        } else {
+            res.status(404).json({ message: 'User not found', authenticated: false });
+        }
+    } catch (error) {
+        console.error('Server error:', error);
+        res.status(500).json({ message: 'Error logging in' });
+    }
+});
+
+
+
+
 // const llamaModel = new ollama.Llama({ model: 'gemma2b' }); 
 
+// app.post('/api/ai-tutor', async (req, res) => {
+//     const { message } = req.body;
+//     try {
+//         const response = await ollama.chat({
+//             model: 'gemma:2b',
+//             messages: [{ role: 'user', content: message }]
+//         });
+//         res.json({ message: response.message.content });
+//     } catch (error) {
+//         console.error('Error calling the AI model:', error);
+//         res.status(500).json({ error: 'Failed to process the AI request.' });
+//     }
+// });
 app.post('/api/ai-tutor', async (req, res) => {
-    const { message } = req.body;
+    const { message, userId } = req.body;  // Assuming userId is sent from the frontend
     try {
+        // Store the user's message
+        await pool.query(
+            'INSERT INTO conversations (user_id, sender, text) VALUES ($1, $2, $3)',
+            [userId, 'You', message]
+        );
+
+        // Call the AI model
         const response = await ollama.chat({
             model: 'gemma:2b',
             messages: [{ role: 'user', content: message }]
         });
-        res.json({ message: response.message.content });
+
+        const aiMessage = response.message.content;
+
+        // Store the AI's response
+        await pool.query(
+            'INSERT INTO conversations (user_id, sender, text) VALUES ($1, $2, $3)',
+            [userId, 'AI', aiMessage]
+        );
+
+        res.json({ message: aiMessage });
     } catch (error) {
         console.error('Error calling the AI model:', error);
         res.status(500).json({ error: 'Failed to process the AI request.' });
+    }
+});
+
+// Endpoint to fetch conversations
+app.get('/api/conversations/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT sender, text, timestamp FROM conversations WHERE user_id = $1 ORDER BY timestamp ASC',
+            [userId]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching conversations:', error);
+        res.status(500).json({ error: 'Failed to fetch conversations.' });
     }
 });
 
@@ -132,16 +225,5 @@ app.delete('/api/files/:id', async (req, res) => {
     }
 });
 
-app.post('/api/llm', async (req, res) => {
-    const { message } = req.body;
-    // Replace this with the actual call to your LLM API
-    const response = await callLLMApi(message);
-    res.json({ answer: response });
-});
-
-const callLLMApi = async (message) => {
-    // Simulated API call - replace with your LLM API call
-    return `Response for: ${message}`;
-};
 
 app.listen(3000, () => console.log('Server running on port 3000'));

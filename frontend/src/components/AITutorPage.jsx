@@ -3,6 +3,7 @@ import { Typography, Button, TextField, List, ListItem, ListItemText, Box, Paper
 import SendIcon from '@mui/icons-material/Send';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PersonIcon from '@mui/icons-material/Person';
+import UserLogin from './UserLogin';
 
 
 function AITutorPage() {
@@ -41,10 +42,10 @@ function AITutorPage() {
 
     return (
         <Box sx={{ padding: 2, maxWidth: 1500, margin: 'auto' }}>
-            <Paper elevation={3} sx={{ padding: 2 }}>
+            <Paper elevation={3} sx={{ padding: 2 }}>Welcome, User!
                 <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-                    <PersonIcon sx={{ marginRight: 1 }} />
-                    <Typography variant="h5" gutterBottom>Welcome, User!</Typography>
+                    <UserLogin />
+                    <Typography variant="h5" gutterBottom></Typography>
                 </Box>
                 <List sx={{ maxHeight: 500, overflow: 'auto', bgcolor: 'background.paper' }}>
                     {messages.map((msg, index) => (

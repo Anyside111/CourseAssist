@@ -7,6 +7,11 @@ import Sidebar from './components/Sidebar';
 import FileUpload from './components/FileUpload';
 import FilePreview from './components/FilePreview';
 import AITutorPage from './components/AITutorPage';
+import HomePage from './components/HomePage';
+import Signup from './components/SignUp';
+import Conversations from './components/Conversations';
+import UserLogin from './components/UserLogin';
+
 
 const theme = createTheme({
   palette: {
@@ -32,7 +37,10 @@ function App() {
               <Route path="/ai-tutor" element={<AITutorPage />} />
               <Route path="/course-materials" element={<FileUpload />} />
               <Route path="/file-preview/:id" element={<FilePreview />} />
-              {/* Define other routes here */}
+              <Route path="/home" element={<HomePage />} /> 
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/conversations" element={<Conversations />} />
+              <Route path="/login" element={<UserLogin />} />
             </Routes>
           </main>
         </div>

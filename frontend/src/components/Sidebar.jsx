@@ -87,9 +87,9 @@ const Sidebar = ({ open, toggleDrawer }) => {
                         />
                         
                         <NavigationItem
-                            to="/user-login"
-                            icon={<UserLogin />}
-                            text="User Login"
+                            to="/signup"
+                            icon={<PersonIcon />}
+                            text="Sign Up"
                             open={open}
                         />
                     </List>
