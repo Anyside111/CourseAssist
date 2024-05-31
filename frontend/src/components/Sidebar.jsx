@@ -5,7 +5,10 @@ import SchoolIcon from '@mui/icons-material/School';
 import BookIcon from '@mui/icons-material/Book';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
 import NavigationItem from './NavigationItem';
+import UserLogin from './UserLogin';
+
 
 const Sidebar = ({ open, toggleDrawer }) => {
     return (
@@ -56,6 +59,13 @@ const Sidebar = ({ open, toggleDrawer }) => {
                 <Box sx={{ flex: 1, overflow: 'auto', mt: '10px' }}>
                     <List>
                         <NavigationItem
+                            to="/home"
+                            icon={<HomeIcon />}
+                            text="Home"
+                            open={open}
+                        />
+
+                        <NavigationItem
                             to="/ai-tutor"
                             // to="https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69"
                             icon={<SchoolIcon />}
@@ -75,10 +85,11 @@ const Sidebar = ({ open, toggleDrawer }) => {
                             text="Conversations"
                             open={open}
                         />
+                        
                         <NavigationItem
-                            to="/"
-                            icon={<HomeIcon />}
-                            text="Home"
+                            to="/user-login"
+                            icon={<UserLogin />}
+                            text="User Login"
                             open={open}
                         />
                     </List>
