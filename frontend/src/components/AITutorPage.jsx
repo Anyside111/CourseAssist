@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { Typography, Button, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
+import { Typography, Button, TextField, List, ListItem, ListItemText, Box, Paper, IconButton } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import PersonIcon from '@mui/icons-material/Person';
+
 
 function AITutorPage() {
     const [message, setMessage] = useState('');
@@ -30,40 +34,47 @@ function AITutorPage() {
         }
     };
 
+    const handleRefresh = () => {
+        setMessage('');
+        setMessages([]); // Clear conversation
+    };
+
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" gutterBottom>Hello, User!</Typography>
-            <List>
-                {messages.map((msg, index) => (
-                    <ListItem key={index}>
-                        <ListItemText primary={`${msg.sender}: ${msg.text}`} />
-                    </ListItem>
-                ))}
-            </List>
-            <TextField
-                variant="outlined"
-                fullWidth
-                placeholder="What can I help you with? Ask your question here."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !loading) {
-                        e.preventDefault();
-                        handleSendMessage();
-                    }
-                }}
-                disabled={loading}
-                sx={{ marginTop: 2 }}
-            />
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSendMessage}
-                disabled={loading || !message.trim()}
-                sx={{ marginTop: 2 }}
-            >
-                Submit
-            </Button>
+        <Box sx={{ padding: 2, maxWidth: 1500, margin: 'auto' }}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+                    <PersonIcon sx={{ marginRight: 1 }} />
+                    <Typography variant="h5" gutterBottom>Welcome, User!</Typography>
+                </Box>
+                <List sx={{ maxHeight: 500, overflow: 'auto', bgcolor: 'background.paper' }}>
+                    {messages.map((msg, index) => (
+                        <ListItem key={index}>
+                            <ListItemText primary={`${msg.sender}: ${msg.text}`} />
+                        </ListItem>
+                    ))}
+                </List>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                    <TextField
+                        variant="outlined"
+                        fullWidth
+                        placeholder="Type your message..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter' && !loading) {
+                                e.preventDefault();
+                                handleSendMessage();
+                            }
+                        }}
+                    />
+                    <IconButton color="primary" onClick={handleSendMessage} disabled={loading || !message.trim()}>
+                        <SendIcon />
+                    </IconButton>
+                </Box>
+                <Button startIcon={<RefreshIcon />} variant="outlined" onClick={handleRefresh} sx={{ mt: 2 }}>
+                    Reset
+                </Button>
+            </Paper>
         </Box>
     );
 }
