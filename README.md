@@ -1,7 +1,10 @@
-# CourseAssist AI
+# CourseAssist web application
 
 ## Overview
 CourseAssist AI is a platform designed to help students with course-related questions using an AI-powered assistant. It features functionality for handling and uploading course materials, as well as interacting with an AI for educational support.
+![Image 1](/1.png "Home page")
+![Image 2](/2.png "Upload file")
+![Image 3](/3.png "Chat with llama")
 
 ## Technologies
 - React.js
