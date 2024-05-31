@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "REPLICATE_API_TOKEN=r8_SopIhgnSOJ9phf3VVbRbHYytj9UdgAW07CY3a",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,8 +12,12 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
-    "pg": "^8.11.5"
+    "ollama": "^0.5.1",
+    "openai": "^4.47.2",
+    "pg": "^8.11.5",
+    "replicate": "^0.30.1"
   }
 }

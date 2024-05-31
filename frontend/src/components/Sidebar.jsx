@@ -12,23 +12,24 @@ const Sidebar = ({ open, toggleDrawer }) => {
         <>
             <CssBaseline />
             <AppBar position="fixed" sx={{
-                bgcolor: 'rgba(40, 200, 180, 0.8)', // Modern blue-grey color with transparency
+                bgcolor: '#cadefc', //'rgba(40, 200, 180, 0.8)' Modern blue-grey color with transparency
                 boxShadow: '5px -5px 10px rgba(0, 0, 0, 0.3), 5px 5px 10px rgba(0, 0, 0, 0.3)',
                 zIndex: 1400,
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '10px 20px'
+                padding: '10px 30px'
             }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
-                        <MenuIcon />
+                        <MenuIcon style={{ color: '#333' }}/>
                     </IconButton>
                     <img src="/logo_CourseAssist.png" alt="CourseAssist AI Logo" style={{
                         height: 50,
                         marginLeft: '10px',
-                        filter: 'drop-shadow(2px 4px 6px grey)',
+                        filter:  'drop-shadow(0px 0px 5px #666)',
+                        borderRadius: '5px'
                     }} />
                 </Box>
             </AppBar>
@@ -36,7 +37,7 @@ const Sidebar = ({ open, toggleDrawer }) => {
                 variant="permanent"
                 open={open}
                 sx={{
-                    width: open ? 240 : 72,
+                    width: open ? 50 : 50,
                     flexShrink: 0,
                     whiteSpace: 'nowrap',
                     boxSizing: 'border-box',
@@ -48,15 +49,15 @@ const Sidebar = ({ open, toggleDrawer }) => {
                         backgroundColor: 'white',
                         boxShadow: '5px 5px 15px rgba(0,0,0,0.3)',
                         borderRadius: 2,
-                        marginTop: '64px',
+                        marginTop: '75px',
                     }
                 }}
             >
                 <Box sx={{ flex: 1, overflow: 'auto', mt: '10px' }}>
                     <List>
                         <NavigationItem
-                            // to="/ai-tutor"
-                            to="https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69"
+                            to="/ai-tutor"
+                            // to="https://app.courseassistai.com/courses/1000003/s1rZMDFTdIYNEJ9W6Pu6UdXUluf1_714f639f-4d04-4ed6-8763-08751ad61a69"
                             icon={<SchoolIcon />}
                             text="AI Tutor"
                             // onClick={() => window.open('/ai-tutor', '_blank')}

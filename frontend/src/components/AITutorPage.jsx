@@ -1,36 +1,38 @@
-// src/components/AITutorPage.jsx
 import React, { useState } from 'react';
 import { Typography, Button, TextField, List, ListItem, ListItemText, Box } from '@mui/material';
 
 function AITutorPage() {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         const newMessage = { sender: 'You', text: message };
-        const newMessages = [...messages, newMessage];
-        setMessages(newMessages);
-        setMessage('');
+        setMessages(prev => [...prev, newMessage]); // Display the user's message
+        setLoading(true);
 
-        const aiResponse = { sender: 'AI', text: 'This is a simulated response from the AI.' };
-        setTimeout(() => {
-            setMessages([...newMessages, aiResponse]);
-        }, 1000);
+        try {
+            const response = await fetch('http://localhost:3000/api/ai-tutor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message }) // Send the message to the backend
+            });
+            const data = await response.json();
+            setMessages(prev => [...prev, { sender: 'AI', text: data.message }]); // Display AI's response
+        } catch (error) {
+            console.error('Failed to fetch response:', error);
+            setMessages(prev => [...prev, { sender: 'AI', text: 'Failed to fetch response.' }]);
+        } finally {
+            setLoading(false);
+            setMessage(''); // Clear the message input after sending
+        }
     };
 
     return (
         <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" gutterBottom>
-                Hello, User!
-            </Typography>
-            <Button variant="contained" color="primary" sx={{ marginRight: 1 }}>SIGN OUT</Button>
-            <Button variant="contained" color="secondary" sx={{ marginRight: 1 }}>SEND EMAIL VERIFICATION</Button>
-            <Button variant="contained" color="secondary">SEND PASSWORD RESET EMAIL</Button>
-
-            <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
-                Hi! I'm CourseAssist AI, your AI-powered course assistant. I can answer questions about your course content. Let me know what I can help you with today!
-            </Typography>
-
+            <Typography variant="h4" gutterBottom>Hello, User!</Typography>
             <List>
                 {messages.map((msg, index) => (
                     <ListItem key={index}>
@@ -38,7 +40,6 @@ function AITutorPage() {
                     </ListItem>
                 ))}
             </List>
-
             <TextField
                 variant="outlined"
                 fullWidth
@@ -46,17 +47,19 @@ function AITutorPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && !loading) {
                         e.preventDefault();
                         handleSendMessage();
                     }
                 }}
+                disabled={loading}
                 sx={{ marginTop: 2 }}
             />
             <Button
                 variant="contained"
                 color="primary"
                 onClick={handleSendMessage}
+                disabled={loading || !message.trim()}
                 sx={{ marginTop: 2 }}
             >
                 Submit

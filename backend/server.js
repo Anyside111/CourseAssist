@@ -1,15 +1,46 @@
+// require('dotenv').config();
+// console.log("API Token:", process.env.REPLICATE_API_TOKEN);  // Should print your token
+const ollama = require('ollama').default;
+console.log(ollama);
 const express = require('express');
-const fileUpload = require('express-fileupload');
 const cors = require('cors');
-const path = require('path');
+const fileUpload = require('express-fileupload');
 const fs = require('fs');
-const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
+// const Replicate = require("replicate");
+
+// console.log("Checking API Token:", process.env.REPLICATE_API_TOKEN);
+// const replicate = new Replicate({
+//   auth: process.env.REPLICATE_API_TOKEN
+// });
+// console.log(replicate.auth);  // This should print your token if correctly set
 const { Pool } = require('pg');
 const pool = new Pool({ connectionString: 'postgres://postgres:1212@localhost:5432/courseassist' });
 
+const app = express();
 app.use(cors());
+app.use(bodyParser.json()); 
 app.use(express.json());
 app.use(fileUpload());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// const llamaModel = new ollama.Llama({ model: 'gemma2b' }); 
+
+app.post('/api/ai-tutor', async (req, res) => {
+    const { message } = req.body;
+    try {
+        const response = await ollama.chat({
+            model: 'gemma:2b',
+            messages: [{ role: 'user', content: message }]
+        });
+        res.json({ message: response.message.content });
+    } catch (error) {
+        console.error('Error calling the AI model:', error);
+        res.status(500).json({ error: 'Failed to process the AI request.' });
+    }
+});
+
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));

@@ -64,21 +64,22 @@ button:hover {
 .MuiAppBar-root {
     box-shadow: none;
     width: 100%;
-    background-color: #4A90E2;
-    background-image: linear-gradient(45deg, #4A90E2 30%, #91eff3 90%);
+    background-color: #e5e7e8;
+    background-image: linear-gradient(45deg, #a3cdf4 30%, #3873bb 90%);
 }
 
 /* Styling the drawer and list items */
 .MuiDrawer-paper {
     box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
     background-color: white;
+    /* width: 10px; */
 }
 
 .MuiListItem-root:hover {
     background-color: rgba(23, 95, 172, 0.1);
     color: #3876bc;
     margin: 10px 0;
-    padding: 18px;
+    padding: 10px;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
@@ -86,7 +87,7 @@ button:hover {
 /* Adding space between list items */
 .MuiListItem-root {
     margin-bottom: 10px;
-    padding: 15px;
+    padding: 13px;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
