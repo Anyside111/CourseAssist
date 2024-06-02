@@ -32,7 +32,7 @@ app.post('/signup', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10); // Ensure the salt rounds are consistent
         const result = await pool.query(
-            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
+            'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING username',
             [username, hashedPassword]
         );
         res.status(201).json({ userId: result.rows[0].id, message: 'Registration successful', authenticated: true });
@@ -120,12 +120,12 @@ app.post('/api/ai-tutor', async (req, res) => {
 });
 
 // Endpoint to fetch conversations
-app.get('/api/conversations/:userId', async (req, res) => {
-    const { userId } = req.params;
+app.get('/api/conversations/:username', async (req, res) => {
+    const { username } = req.params;
     try {
         const result = await pool.query(
-            'SELECT sender, text, timestamp FROM conversations WHERE user_id = $1 ORDER BY timestamp ASC',
-            [userId]
+            'SELECT sender, text, timestamp FROM conversations WHERE username = $1 ORDER BY timestamp ASC',
+            [username]
         );
         res.json(result.rows);
     } catch (error) {
@@ -170,7 +170,7 @@ app.post('/upload', async (req, res) => {
 // Route to retrieve file list
 app.get('/api/files', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT id, filename, upload_date FROM files ORDER BY upload_date DESC');
+        const { rows } = await pool.query('SELECT filename, upload_date FROM files ORDER BY upload_date DESC');
         res.json(rows);
     } catch (err) {
         console.error('Error retrieving files', err);
@@ -179,11 +179,11 @@ app.get('/api/files', async (req, res) => {
 });
 
 // Route to serve individual files
-app.get('/files/:id', async (req, res) => {
-    const fileId = req.params.id;
+app.get('/files/:filename', async (req, res) => {
+    const filename = req.params.filename;
 
     try {
-        const result = await pool.query('SELECT filename FROM files WHERE id = $1', [fileId]);
+        const result = await pool.query('SELECT filename FROM files WHERE filename = $1', [filename]);
 
         if (result.rows.length > 0) {
             const file = result.rows[0];
@@ -199,11 +199,11 @@ app.get('/files/:id', async (req, res) => {
 });
 
 // Route to delete a file
-app.delete('/api/files/:id', async (req, res) => {
-    const fileId = req.params.id;
+app.delete('/api/files/:filename', async (req, res) => {
+    const filename = req.params.filename;
 
     try {
-        const result = await pool.query('SELECT filename FROM files WHERE id = $1', [fileId]);
+        const result = await pool.query('SELECT filename FROM files WHERE filename = $1', [filename]);
 
         if (result.rows.length > 0) {
             const filePath = path.join(__dirname, 'uploads', result.rows[0].filename);
@@ -213,7 +213,7 @@ app.delete('/api/files/:id', async (req, res) => {
                     return res.status(500).send('Error deleting file');
                 }
 
-                await pool.query('DELETE FROM files WHERE id = $1', [fileId]);
+                await pool.query('DELETE FROM files WHERE filename = $1', [filename]);
                 res.status(200).send('File deleted');
             });
         } else {

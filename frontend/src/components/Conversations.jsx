@@ -5,7 +5,7 @@ const Conversations = () => {
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
     
     useEffect(() => {
         const fetchConversations = async () => {

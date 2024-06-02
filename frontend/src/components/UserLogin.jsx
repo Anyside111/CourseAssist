@@ -55,7 +55,7 @@ export default function UserLogin() {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const navigate = useNavigate();
 
-    const handleAuthenticate = (username, password, isSignUp, setUserId, setUsername) => {
+    const handleAuthenticate = (username, password, isSignUp) => {
         const url = `http://localhost:3000/${isSignUp ? 'signup' : 'login'}`;
         fetch(url, {
             method: 'POST',
@@ -76,10 +76,7 @@ export default function UserLogin() {
             setMessage(data.message);
             setSnackbarOpen(true);
             if (data.authenticated) {
-                localStorage.setItem('userId', data.userId);
                 localStorage.setItem('username', data.username); // Store the username
-                setUserId(data.userId); // Set the user ID state
-                setUsername(data.username); // Set the username state
                 setTimeout(() => navigate('/home'), 600); // Delay navigation
             }
         })

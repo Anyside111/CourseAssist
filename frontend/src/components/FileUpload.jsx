@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useDropzone } from 'react-dropzone';
 import { List, ListItem, ListItemText, Button, Card, CardContent, Typography, Box, Snackbar, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -105,10 +105,10 @@ function FileUpload() {
                 }
             })
             .catch(error => console.error('Error:', error));
-    };
+    };    
 
-    const handleFileDelete = (fileId) => {
-        fetch(`http://localhost:3000/api/files/${fileId}`, {
+    const handleFileDelete = (filename) => {
+        fetch(`http://localhost:3000/api/files/${filename}`, {
             method: 'DELETE',
         })
         .then(response => response.text())
@@ -120,14 +120,14 @@ function FileUpload() {
         .catch(error => {
             console.error('Error:', error);
         });
-    };
+    };    
     
     useEffect(() => {
         fetchFiles(); // Fetch files on component mount
     }, []);
 
-    const handlePreview = (fileId) => {
-        navigate(`/file-preview/${fileId}`);
+    const handlePreview = (filename) => {
+        navigate(`/file-preview/${filename}`);
     };
 
     return (
@@ -184,14 +184,14 @@ function FileUpload() {
                     </Typography>
                     <FileList>
                         {files.map((file, index) => (
-                            <FileItem key={file.id}>
+                            <FileItem key={file.filename}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <FileName variant="body2">{index + 1}. {file.filename}</FileName>
                                     <Button
                                         variant="outlined"
                                         size="small"
                                         color="primary"
-                                        onClick={() => handlePreview(file.id)}
+                                        onClick={() => handlePreview(file.filename)}
                                         sx={{ marginLeft: 1 }}
                                     >
                                         View
@@ -200,7 +200,7 @@ function FileUpload() {
                                         variant="outlined"
                                         size="small"
                                         color="secondary"
-                                        onClick={() => handleFileDelete(file.id)}
+                                        onClick={() => handleFileDelete(file.filename)}
                                         sx={{ marginLeft: 1 }}
                                     >
                                         Delete
