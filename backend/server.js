@@ -35,7 +35,7 @@ app.post('/signup', async (req, res) => {
             'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING username',
             [username, hashedPassword]
         );
-        res.status(201).json({ userId: result.rows[0].id, message: 'Registration successful', authenticated: true });
+        res.status(201).json({ username: result.rows[0].id, message: 'Registration successful', authenticated: true });
     } catch (error) {
         if (error.code === '23505') {
             res.status(409).json({ message: 'Username already exists', authenticated: false });
@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
             const user = result.rows[0];
             const isMatch = await bcrypt.compare(password, user.password_hash);
             if (isMatch) {
-                res.json({ message: 'Login successful', authenticated: true, userId: user.id, username: user.username });
+                res.json({ message: 'Login successful', authenticated: true, username: user.username });
             } else {
                 res.status(400).json({ message: 'Invalid credentials', authenticated: false });
             }

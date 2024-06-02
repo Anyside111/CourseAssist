@@ -9,7 +9,7 @@ function AuthDialog({ open, onClose, onAuthenticate, isSignUp }) {
     const [password, setPassword] = useState('');
 
     const handleAuthenticate = () => {
-        onAuthenticate(username, password, isSignUp);
+        onAuthenticate(String(username), String(password), isSignUp);
         onClose();
     };
 
